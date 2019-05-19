@@ -1,0 +1,104 @@
+---
+title: "Comparing the Effect of Vitamin C and Orange Juice on Guinea Pig Tooth Length"
+author: "Jason Dyer"
+date: "April 19, 2019"
+output: pdf_document
+---
+
+###Overview
+This report will analyze on the effect of vitamin c and orange juice on the length of teeth in guinea pigs.  The first part will be a basic summary of the data.  The second part will test several hypothesis on the effect of vitamin C and orange juice has on teeth length.
+
+###Load the Data and Libraries
+```{r echo=TRUE, warning=FALSE, results="hide", message=FALSE}
+library(datasets)
+library(pastecs)
+library(ggplot2)
+data(ToothGrowth)
+```
+
+###Data Summary
+```{r}
+stat.desc(ToothGrowth$len, basic=TRUE, desc=TRUE, norm=TRUE, p=0.95)
+```
+
+Our dataset contains 60 observations with a mean of 18.81, a median of 19.25, a minimum value of 4.2 and a maximum value of 33.9.  The negative skewness and kurtosis results indicate that the data is slightly skewed negatively and has a flat distribution.  The Shaprio-Wilk test results show that the data is normally distributed.  Below is a histogram of the dataset:
+
+```{r echo = FALSE}
+hist(ToothGrowth$len,
+     main = "Histogram of Teeth Length",
+     xlab = "Teeth Length",
+     col = "green")
+```
+
+Plotting teeth length by dosage:
+```{r echo = FALSE}
+ggplot(ToothGrowth,aes(factor(dose),len,fill=supp)) +
+    geom_bar(stat="identity", position = "dodge")+
+    xlab("Dose (mg)") +
+    ylab("Teeth Length") +
+    labs(title = "Teeth Length by Dose and Supplement")+
+    theme(plot.title = element_text(hjust=0.5))
+```
+
+The plot suggests that orange juice contributes to longer teeth than vitamin C at a vitamin C dosage of 0.5 mg/day and 1 mg/day but at 2 mg/day, the effects of orange juice and vitamin C are similar.
+
+### Use confidence intervals and hypothesis tests to compare tooth growth by supplement and dose.
+##### Hypothesis 1
+There is no difference on teeth length between orange juice and vitamin C regardless of vitamin C dosage.
+```{r}
+h1<-t.test(len~supp, data=ToothGrowth)
+h1$conf.int
+h1$p.value
+```
+The confidence interval includes zero and has a p-value above 5%.  Therefore, we fail to reject the null hypothesis.
+
+##### Hypothesis 2
+There is no difference on teeth length between orange juice and vitamin C dosage of 0.5 mg/day.
+```{r}
+h2<-t.test(len~supp, data= subset(ToothGrowth,dose==0.5))
+h2$conf.int
+h2$p.value
+```
+The confidence level does not include 0 and has a p-value below 5%.  We can reject the null hypothesis and accept the hypothesis that orange juice does increase teeth length more than 0.5 mg/day of vitamin C.
+
+##### Hypothesis 3
+There is no difference on teeth length between orange juice and vitamin C dosage of 1.0 mg/day.
+```{r}
+h3<-t.test(len~supp, data= subset(ToothGrowth,dose==1))
+h3$conf.int
+h3$p.value
+```
+The confidence level does not include 0 and has a p-value below 5%.  We can reject the null hypothesis and accept the hypothesis that orange juice does increase teeth length more than 1.0 mg/day of vitamin C.
+
+##### Hypothesis 4
+There is no difference on teeth length between orange juice and vitamin C dosage of 2.0 mg/day.
+```{r}
+h4<-t.test(len~supp, data= subset(ToothGrowth,dose==2))
+h4$conf.int
+h4$p.value
+```
+The confidence interval includes zero and has a p-value above 5%.  Therefore, we fail to reject the null hypothesis.
+
+###Conclusion
+Based on the results of the hypothesis test, vitamin C is no better than orange in the overall data set but at a vitamin C dosage of 0.5 mg/day and 1.0 mg/ day orange juice will provide more tooth than growth than vitamin C.
+
+###Appendix
+Below is the code necessary for the displayed plots
+
+Histogram
+```{r results= FALSE}
+hist(ToothGrowth$len,
+     main = "Histogram of Teeth Length",
+     xlab = "Teeth Length",
+     col = "green")
+```
+
+Plotting teeth length by dosage:
+```{r results= FALSE}
+ggplot(ToothGrowth,aes(factor(dose),len,fill=supp)) +
+    geom_bar(stat="identity", position = "dodge")+
+    xlab("Dose (mg)") +
+    ylab("Teeth Length") +
+    labs(title = "Teeth Length by Dose and Supplement")+
+    theme(plot.title = element_text(hjust=0.5))
+```
